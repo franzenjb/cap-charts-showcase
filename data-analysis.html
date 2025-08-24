@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAP Data Analysis - Point by Point</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
+        
+        :root {
+            --redcross-red: #ED1B2E;
+            --redcross-gray: #6D6E70;
+            --redcross-dark: #231F20;
+        }
+
+        body {
+            font-family: 'Open Sans', -apple-system, sans-serif;
+            background: #f8f9fa;
+        }
+
+        .data-section {
+            background: white;
+            border-left: 4px solid var(--redcross-red);
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .original-data {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .chart-option {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+        }
+
+        .recommendation {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            background: var(--redcross-red);
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .data-table td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        h1 {
+            color: var(--redcross-red);
+        }
+
+        h2 {
+            color: var(--redcross-dark);
+            border-bottom: 2px solid var(--redcross-red);
+            padding-bottom: 10px;
+        }
+
+        .best-practice {
+            background: #fff3e0;
+            border: 1px solid #ff9800;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+        <h1 class="text-4xl font-bold mb-4">Coalition Assistance Program - Data Analysis</h1>
+        <p class="text-xl text-gray-600 mb-8">Point-by-Point Data Visualization Recommendations</p>
+
+        <!-- DATA POINT 1: COALITIONS FORMED -->
+        <div class="data-section">
+            <h2 class="text-2xl font-bold mb-4">Data Point 1: Coalitions Formed (Quarterly)</h2>
+            
+            <div class="original-data">
+                <h3 class="font-bold mb-2">YOUR CLIENT'S DATA:</h3>
+                <table class="data-table">
+                    <tr>
+                        <th>Q1 2024</th>
+                        <th>Q2 2024</th>
+                        <th>Q3 2024</th>
+                        <th>Q4 2024</th>
+                        <th>Total</th>
+                    </tr>
+                    <tr>
+                        <td>32</td>
+                        <td>41</td>
+                        <td>38</td>
+                        <td>36</td>
+                        <td><strong>147</strong></td>
+                    </tr>
+                </table>
+                <p class="mt-3"><strong>Key Message:</strong> Steady growth with Q2 peak, consistent formation rate</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <!-- Option 1 -->
+                <div class="chart-option">
+                    <h3 class="font-bold mb-2">Option 1: Column Chart</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="coalitions-bar"></canvas>
+                    </div>
+                    <div class="recommendation">
+                        <strong>Best For:</strong> Comparing quarters directly<br>
+                        <strong>Why:</strong> Shows clear quarterly comparisons
+                    </div>
+                </div>
+
+                <!-- Option 2 -->
+                <div class="chart-option">
+                    <h3 class="font-bold mb-2">Option 2: Line Trend</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="coalitions-line"></canvas>
+                    </div>
+                    <div class="recommendation">
+                        <strong>Best For:</strong> Showing growth trajectory<br>
+                        <strong>Why:</strong> Emphasizes the trend pattern
+                    </div>
+                </div>
+
+                <!-- Option 3 -->
+                <div class="chart-option">
+                    <h3 class="font-bold mb-2">Option 3: Progress Gauge</h3>
+                    <div class="chart-wrapper">
+                        <div id="coalitions-gauge"></div>
+                    </div>
+                    <div class="recommendation">
+                        <strong>Best For:</strong> Showing goal achievement<br>
+                        <strong>Why:</strong> If 147 meets/exceeds annual target
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DATA POINT 2: VOLUNTEERS RECRUITED -->
+        <div class="data-section">
+            <h2 class="text-2xl font-bold mb-4">Data Point 2: Volunteers Recruited</h2>
+            
+            <div class="original-data">
+                <h3 class="font-bold mb-2">YOUR CLIENT'S DATA:</h3>
+                <table class="data-table">
+                    <tr>
+                        <th>Q1 2024</th>
+                        <th>Q2 2024</th>
+                        <th>Q3 2024</th>
+                        <th>Q4 2024</th>
+                        <th>Total</th>
+                    </tr>
+                    <tr>
+                        <td>842</td>
+                        <td>1,021</td>
+                        <td>956</td>
+                        <td>1,023</td>
+                        <td><strong>3,842</strong></td>
+                    </tr>
+                </table>
+                <p class="mt-3"><strong>Key Message:</strong> Strong recruitment in Q2 & Q4, nearly 1,000 volunteers per quarter average</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <!-- Option 1 -->
+                <div class="chart-option">
+                    <h3 class="font-bold mb-2">Option 1: Area Chart</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="volunteers-area"></canvas>
+                    </div>
+                    <div class="recommendation">
+                        <strong>Best For:</strong> Showing cumulative growth<br>
+                        <strong>Why:</strong> Emphasizes total accumulation
+                    </div>
+                </div>
+
+                <!-- Option 2 -->
+                <div class="chart-option">
+                    <h3 class="font-bold mb-2">Option 2: Stacked Bar</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="volunteers-stacked"></canvas>
+                    </div>
+                    <div class="recommendation">
+                        <strong>Best For:</strong> If you have volunteer types<br>
+                        <strong>Why:</strong> Can show new vs returning
+                    </div>
+                </div>
+
+                <!-- Option 3 -->
+                <div class="chart-option">
+                    <h3 class="font-bold mb-2">Option 3: KPI Card + Sparkline</h3>
+                    <div class="chart-wrapper">
+                        <div id="volunteers-kpi"></div>
+                    </div>
+                    <div class="recommendation">
+                        <strong>Best For:</strong> Executive dashboards<br>
+                        <strong>Why:</strong> Quick impact number with trend
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DATA POINT 3: SERVICES DELIVERED -->
+        <div class="data-section">
+            <h2 class="text-2xl font-bold mb-4">Data Point 3: Services Delivered</h2>
+            
+            <div class="original-data">
+                <h3 class="font-bold mb-2">YOUR CLIENT'S DATA:</h3>
+                <table class="data-table">
+                    <tr>
+                        <th>Q1 2024</th>
+                        <th>Q2 2024</th>
+                        <th>Q3 2024</th>
+                        <th>Q4 2024</th>
+                        <th>Total</th>
+                    </tr>
+                    <tr>
+                        <td>2,456</td>
+                        <td>3,123</td>
+                        <td>3,342</td>
+                        <td>3,536</td>
+                        <td><strong>12,457</strong></td>
+                    </tr>
+                </table>
+                <p class="mt-3"><strong>Key Message:</strong> Consistent quarter-over-quarter growth, 44% increase from Q1 to Q4</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <!-- Option 1 -->
+                <div class="chart-option">
+                    <h3 class="font-bold mb-2">Option 1: Waterfall Chart</h3>
+                    <div class="chart-wrapper">
+                        <div id="services-waterfall"></div>
+                    </div>
+                    <div class="recommendation">
+                        <strong>Best For:</strong> Showing how we built to 12,457<br>
+                        <strong>Why:</strong> Wall Street style, shows progression
+                    </div>
+                </div>
+
+                <!-- Option 2 -->
+                <div class="chart-option">
+                    <h3 class="font-bold mb-2">Option 2: Growth Line</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="services-growth"></canvas>
+                    </div>
+                    <div class="recommendation">
+                        <strong>Best For:</strong> Highlighting upward trend<br>
+                        <strong>Why:</strong> Shows consistent improvement
+                    </div>
+                </div>
+
+                <!-- Option 3 -->
+                <div class="chart-option">
+                    <h3 class="font-bold mb-2">Option 3: Bullet Chart</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="services-bullet"></canvas>
+                    </div>
+                    <div class="recommendation">
+                        <strong>Best For:</strong> Comparing to targets<br>
+                        <strong>Why:</strong> Shows performance vs goals
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DATA POINT 4: COMMUNITIES SERVED -->
+        <div class="data-section">
+            <h2 class="text-2xl font-bold mb-4">Data Point 4: Communities Served</h2>
+            
+            <div class="original-data">
+                <h3 class="font-bold mb-2">YOUR CLIENT'S DATA:</h3>
+                <table class="data-table">
+                    <tr>
+                        <th>Q1 2024</th>
+                        <th>Q2 2024</th>
+                        <th>Q3 2024</th>
+                        <th>Q4 2024</th>
+                        <th>Total</th>
+                    </tr>
+                    <tr>
+                        <td>178</td>
+                        <td>234</td>
+                        <td>256</td>
+                        <td>224</td>
+                        <td><strong>892</strong></td>
+                    </tr>
+                </table>
+                <p class="mt-3"><strong>Key Message:</strong> Peak reach in Q3, serving nearly 900 communities annually</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <!-- Option 1 -->
+                <div class="chart-option">
+                    <h3 class="font-bold mb-2">Option 1: Map Visualization</h3>
+                    <div class="chart-wrapper">
+                        <div id="communities-map"></div>
+                    </div>
+                    <div class="recommendation">
+                        <strong>Best For:</strong> Geographic impact<br>
+                        <strong>Why:</strong> Shows coverage visually
+                    </div>
+                </div>
+
+                <!-- Option 2 -->
+                <div class="chart-option">
+                    <h3 class="font-bold mb-2">Option 2: Donut Chart</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="communities-donut"></canvas>
+                    </div>
+                    <div class="recommendation">
+                        <strong>Best For:</strong> Quarterly distribution<br>
+                        <strong>Why:</strong> Shows proportional reach
+                    </div>
+                </div>
+
+                <!-- Option 3 -->
+                <div class="chart-option">
+                    <h3 class="font-bold mb-2">Option 3: Icon Array</h3>
+                    <div class="chart-wrapper">
+                        <div id="communities-icons"></div>
+                    </div>
+                    <div class="recommendation">
+                        <strong>Best For:</strong> Human-scale impact<br>
+                        <strong>Why:</strong> Makes 892 feel tangible
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DATA POINT 5: RESPONSE TIME -->
+        <div class="data-section">
+            <h2 class="text-2xl font-bold mb-4">Data Point 5: Average Response Time (Hours)</h2>
+            
+            <div class="original-data">
+                <h3 class="font-bold mb-2">YOUR CLIENT'S DATA:</h3>
+                <table class="data-table">
+                    <tr>
+                        <th>Q1 2024</th>
+                        <th>Q2 2024</th>
+                        <th>Q3 2024</th>
+                        <th>Q4 2024</th>
+                        <th>Average</th>
+                    </tr>
+                    <tr>
+                        <td>3.2</td>
+                        <td>2.8</td>
+                        <td>2.3</td>
+                        <td>2.4</td>
+                        <td><strong>2.7</strong></td>
+                    </tr>
+                </table>
+                <p class="mt-3"><strong>Key Message:</strong> 28% improvement from Q1 to Q3, maintaining sub-3-hour response</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <!-- Option 1 -->
+                <div class="chart-option">
+                    <h3 class="font-bold mb-2">Option 1: Inverse Bar Chart</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="response-inverse"></canvas>
+                    </div>
+                    <div class="recommendation">
+                        <strong>Best For:</strong> Lower is better metrics<br>
+                        <strong>Why:</strong> Visually shows improvement
+                    </div>
+                </div>
+
+                <!-- Option 2 -->
+                <div class="chart-option">
+                    <h3 class="font-bold mb-2">Option 2: Speedometer</h3>
+                    <div class="chart-wrapper">
+                        <div id="response-gauge"></div>
+                    </div>
+                    <div class="recommendation">
+                        <strong>Best For:</strong> Real-time dashboards<br>
+                        <strong>Why:</strong> Intuitive speed metaphor
+                    </div>
+                </div>
+
+                <!-- Option 3 -->
+                <div class="chart-option">
+                    <h3 class="font-bold mb-2">Option 3: Step Line</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="response-step"></canvas>
+                    </div>
+                    <div class="recommendation">
+                        <strong>Best For:</strong> Showing improvement journey<br>
+                        <strong>Why:</strong> Highlights each reduction
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BEST PRACTICES -->
+        <div class="data-section">
+            <h2 class="text-2xl font-bold mb-4">Best Practices Summary</h2>
+            
+            <div class="best-practice">
+                <h3 class="font-bold mb-2">📊 For Quarterly Comparisons:</h3>
+                <ul class="list-disc ml-6">
+                    <li>Use <strong>Column/Bar Charts</strong> when you want to compare individual quarters</li>
+                    <li>Use <strong>Line Charts</strong> when you want to show trends over time</li>
+                    <li>Use <strong>Area Charts</strong> when you want to show accumulation</li>
+                </ul>
+            </div>
+
+            <div class="best-practice">
+                <h3 class="font-bold mb-2">📈 For Growth Metrics:</h3>
+                <ul class="list-disc ml-6">
+                    <li>Use <strong>Waterfall Charts</strong> to show how you built to a total</li>
+                    <li>Use <strong>Sparklines</strong> for compact trend display</li>
+                    <li>Use <strong>Growth Rate Charts</strong> to show percentage changes</li>
+                </ul>
+            </div>
+
+            <div class="best-practice">
+                <h3 class="font-bold mb-2">🎯 For Performance Metrics:</h3>
+                <ul class="list-disc ml-6">
+                    <li>Use <strong>Gauges/Speedometers</strong> for single KPIs against targets</li>
+                    <li>Use <strong>Bullet Charts</strong> to compare actual vs target</li>
+                    <li>Use <strong>Inverse Charts</strong> for "lower is better" metrics</li>
+                </ul>
+            </div>
+
+            <div class="best-practice">
+                <h3 class="font-bold mb-2">🌍 For Impact Metrics:</h3>
+                <ul class="list-disc ml-6">
+                    <li>Use <strong>Maps</strong> for geographic distribution</li>
+                    <li>Use <strong>Icon Arrays</strong> to make numbers feel human</li>
+                    <li>Use <strong>Donut/Pie Charts</strong> for proportional breakdowns</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Chart.js defaults
+        Chart.defaults.color = '#6D6E70';
+        Chart.defaults.font.family = 'Open Sans';
+
+        // DATA POINT 1: COALITIONS FORMED
+        // Option 1: Bar Chart
+        new Chart(document.getElementById('coalitions-bar'), {
+            type: 'bar',
+            data: {
+                labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                datasets: [{
+                    label: 'Coalitions Formed',
+                    data: [32, 41, 38, 36],
+                    backgroundColor: ['#ED1B2E', '#ED1B2E', '#ED1B2E', '#ED1B2E'],
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Number of Coalitions' }
+                    }
+                }
+            }
+        });
+
+        // Option 2: Line Chart
+        new Chart(document.getElementById('coalitions-line'), {
+            type: 'line',
+            data: {
+                labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                datasets: [{
+                    label: 'Quarterly Trend',
+                    data: [32, 41, 38, 36],
+                    borderColor: '#ED1B2E',
+                    backgroundColor: 'rgba(237, 27, 46, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 6,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#ED1B2E',
+                    pointBorderWidth: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // Option 3: Gauge
+        Plotly.newPlot('coalitions-gauge', [{
+            type: 'indicator',
+            mode: 'gauge+number+delta',
+            value: 147,
+            title: { text: 'Annual Total' },
+            delta: { reference: 120, increasing: { color: '#4CAF50' } },
+            gauge: {
+                axis: { range: [null, 200] },
+                bar: { color: '#ED1B2E' },
+                steps: [
+                    { range: [0, 50], color: '#ffebee' },
+                    { range: [50, 100], color: '#ffcdd2' },
+                    { range: [100, 150], color: '#ef9a9a' },
+                    { range: [150, 200], color: '#e57373' }
+                ],
+                threshold: {
+                    line: { color: 'green', width: 4 },
+                    thickness: 0.75,
+                    value: 120
+                }
+            }
+        }], {
+            margin: { t: 50, r: 25, l: 25, b: 25 },
+            paper_bgcolor: 'transparent',
+            font: { family: 'Open Sans' }
+        });
+
+        // DATA POINT 2: VOLUNTEERS
+        // Option 1: Area Chart
+        new Chart(document.getElementById('volunteers-area'), {
+            type: 'line',
+            data: {
+                labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                datasets: [{
+                    label: 'Volunteers',
+                    data: [842, 1863, 2819, 3842],
+                    borderColor: '#ED1B2E',
+                    backgroundColor: 'rgba(237, 27, 46, 0.2)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: true, text: 'Cumulative Volunteers' }
+                }
+            }
+        });
+
+        // Option 2: Stacked Bar
+        new Chart(document.getElementById('volunteers-stacked'), {
+            type: 'bar',
+            data: {
+                labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                datasets: [{
+                    label: 'New Volunteers',
+                    data: [500, 600, 550, 650],
+                    backgroundColor: '#ED1B2E'
+                }, {
+                    label: 'Returning',
+                    data: [342, 421, 406, 373],
+                    backgroundColor: '#00A0DF'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { stacked: true },
+                    y: { stacked: true }
+                }
+            }
+        });
+
+        // Option 3: KPI Card
+        document.getElementById('volunteers-kpi').innerHTML = `
+            <div style="text-align: center; padding: 20px;">
+                <div style="font-size: 48px; font-weight: bold; color: #ED1B2E;">3,842</div>
+                <div style="font-size: 18px; color: #6D6E70; margin-top: 10px;">Total Volunteers</div>
+                <div style="margin-top: 20px;">
+                    <canvas id="volunteers-spark" height="50"></canvas>
+                </div>
+                <div style="color: #4CAF50; font-size: 16px; margin-top: 10px;">↑ 21.5% vs last year</div>
+            </div>
+        `;
+        
+        new Chart(document.getElementById('volunteers-spark'), {
+            type: 'line',
+            data: {
+                labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                datasets: [{
+                    data: [842, 1021, 956, 1023],
+                    borderColor: '#ED1B2E',
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { display: false },
+                    y: { display: false }
+                }
+            }
+        });
+
+        // DATA POINT 3: SERVICES
+        // Option 1: Waterfall
+        Plotly.newPlot('services-waterfall', [{
+            type: 'waterfall',
+            x: ['Q1', 'Q2', 'Q3', 'Q4', 'Total'],
+            y: [2456, 3123, 3342, 3536, 0],
+            measure: ['relative', 'relative', 'relative', 'relative', 'total'],
+            text: ['2,456', '+3,123', '+3,342', '+3,536', '12,457'],
+            textposition: 'outside',
+            increasing: { marker: { color: '#ED1B2E' } },
+            totals: { marker: { color: '#231F20' } }
+        }], {
+            title: 'Building to 12,457 Services',
+            showlegend: false,
+            margin: { t: 60, r: 30, l: 30, b: 40 }
+        });
+
+        // Option 2: Growth Line
+        new Chart(document.getElementById('services-growth'), {
+            type: 'line',
+            data: {
+                labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                datasets: [{
+                    label: 'Services',
+                    data: [2456, 3123, 3342, 3536],
+                    borderColor: '#ED1B2E',
+                    borderWidth: 3,
+                    pointRadius: 6,
+                    pointBackgroundColor: '#ED1B2E',
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    annotation: {
+                        annotations: {
+                            line1: {
+                                type: 'line',
+                                yMin: 2456,
+                                yMax: 2456,
+                                borderColor: 'rgba(0,0,0,0.3)',
+                                borderWidth: 1,
+                                borderDash: [5, 5]
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Option 3: Bullet Chart
+        new Chart(document.getElementById('services-bullet'), {
+            type: 'bar',
+            data: {
+                labels: ['Services Delivered'],
+                datasets: [{
+                    label: 'Actual',
+                    data: [12457],
+                    backgroundColor: '#ED1B2E',
+                    barThickness: 30
+                }, {
+                    label: 'Target',
+                    data: [10000],
+                    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                    barThickness: 60
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: true }
+                },
+                scales: {
+                    x: {
+                        max: 15000,
+                        grid: { display: true }
+                    }
+                }
+            }
+        });
+
+        // DATA POINT 4: COMMUNITIES
+        // Option 1: Map
+        Plotly.newPlot('communities-map', [{
+            type: 'scattergeo',
+            locationmode: 'USA-states',
+            lon: [-95, -100, -85, -75, -120],
+            lat: [37, 40, 35, 40, 38],
+            text: ['178 Communities', '234 Communities', '256 Communities', '224 Communities', 'HQ'],
+            mode: 'markers+text',
+            marker: {
+                size: [17, 23, 25, 22, 10],
+                color: '#ED1B2E',
+                line: { color: '#231F20', width: 1 }
+            }
+        }], {
+            geo: {
+                scope: 'usa',
+                showland: true,
+                landcolor: '#f0f0f0',
+                projection: { type: 'albers usa' }
+            },
+            showlegend: false,
+            margin: { t: 0, r: 0, l: 0, b: 0 }
+        });
+
+        // Option 2: Donut
+        new Chart(document.getElementById('communities-donut'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                datasets: [{
+                    data: [178, 234, 256, 224],
+                    backgroundColor: ['#ED1B2E', '#c41230', '#00A0DF', '#6D6E70']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'right' }
+                }
+            }
+        });
+
+        // Option 3: Icon Array
+        const iconHtml = [];
+        for (let i = 0; i < 89; i++) {
+            iconHtml.push(`<span style="display: inline-block; width: 8px; height: 8px; background: #ED1B2E; margin: 1px; border-radius: 50%;"></span>`);
+        }
+        document.getElementById('communities-icons').innerHTML = `
+            <div style="padding: 20px; text-align: center;">
+                <div style="font-size: 24px; font-weight: bold; margin-bottom: 10px;">892 Communities</div>
+                <div style="line-height: 1;">${iconHtml.join('')}</div>
+                <div style="margin-top: 10px; color: #6D6E70;">Each dot = 10 communities</div>
+            </div>
+        `;
+
+        // DATA POINT 5: RESPONSE TIME
+        // Option 1: Inverse Bar
+        new Chart(document.getElementById('response-inverse'), {
+            type: 'bar',
+            data: {
+                labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                datasets: [{
+                    label: 'Response Time (hours)',
+                    data: [3.2, 2.8, 2.3, 2.4],
+                    backgroundColor: function(context) {
+                        const value = context.raw;
+                        if (value <= 2.5) return '#4CAF50';
+                        if (value <= 3.0) return '#FFC107';
+                        return '#f44336';
+                    }
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        reverse: false,
+                        beginAtZero: true,
+                        max: 4
+                    }
+                }
+            }
+        });
+
+        // Option 2: Speedometer
+        Plotly.newPlot('response-gauge', [{
+            type: 'indicator',
+            mode: 'gauge+number',
+            value: 2.7,
+            title: { text: 'Avg Response (hours)' },
+            gauge: {
+                axis: { range: [0, 6] },
+                bar: { color: '#4CAF50' },
+                steps: [
+                    { range: [0, 2], color: '#4CAF50' },
+                    { range: [2, 3], color: '#FFC107' },
+                    { range: [3, 4], color: '#FF9800' },
+                    { range: [4, 6], color: '#f44336' }
+                ],
+                threshold: {
+                    line: { color: 'black', width: 2 },
+                    thickness: 0.75,
+                    value: 3
+                }
+            }
+        }], {
+            margin: { t: 50, r: 25, l: 25, b: 25 },
+            paper_bgcolor: 'transparent'
+        });
+
+        // Option 3: Step Line
+        new Chart(document.getElementById('response-step'), {
+            type: 'line',
+            data: {
+                labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                datasets: [{
+                    label: 'Response Time',
+                    data: [3.2, 2.8, 2.3, 2.4],
+                    borderColor: '#ED1B2E',
+                    stepped: true,
+                    fill: false,
+                    borderWidth: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        title: { display: true, text: 'Hours' },
+                        reverse: false
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
