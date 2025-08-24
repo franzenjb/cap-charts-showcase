@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAP Data Visualization Showcase - Red Cross Style</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
+        
+        :root {
+            --redcross-red: #ED1B2E;
+            --redcross-gray: #6D6E70;
+            --redcross-light-gray: #F5F5F5;
+            --redcross-dark: #231F20;
+            --redcross-accent: #00A0DF;
+        }
+
+        body {
+            font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
+        }
+
+        .redcross-header {
+            background: linear-gradient(90deg, var(--redcross-red) 0%, #c41230 100%);
+            box-shadow: 0 4px 20px rgba(237, 27, 46, 0.2);
+        }
+
+        .metric-card {
+            background: white;
+            border-top: 4px solid var(--redcross-red);
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--redcross-red), var(--redcross-accent));
+        }
+
+        .data-table {
+            font-size: 14px;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .data-table th {
+            background: var(--redcross-red);
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .data-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .data-table tr:hover {
+            background: #f9f9f9;
+        }
+
+        .watermark {
+            position: absolute;
+            bottom: 10px;
+            right: 15px;
+            opacity: 0.1;
+            font-size: 12px;
+            color: var(--redcross-red);
+        }
+    </style>
+</head>
+<body>
+    <div class="redcross-header text-white p-6">
+        <div class="container mx-auto">
+            <h1 class="text-4xl font-bold">Coalition Assistance Program</h1>
+            <p class="text-xl mt-2 opacity-90">Data Visualization Showcase - Wall Street Quality</p>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8">
+        <!-- Original Data Display -->
+        <div class="mb-12">
+            <h2 class="text-2xl font-bold mb-6" style="color: var(--redcross-dark);">Original Data Provided</h2>
+            <div class="chart-container">
+                <table class="data-table w-full">
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Q1 2024</th>
+                            <th>Q2 2024</th>
+                            <th>Q3 2024</th>
+                            <th>Q4 2024</th>
+                            <th>YTD Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="font-semibold">Coalitions Formed</td>
+                            <td>32</td>
+                            <td>41</td>
+                            <td>38</td>
+                            <td>36</td>
+                            <td class="font-bold">147</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold">Volunteers Recruited</td>
+                            <td>842</td>
+                            <td>1,021</td>
+                            <td>956</td>
+                            <td>1,023</td>
+                            <td class="font-bold">3,842</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold">Services Delivered</td>
+                            <td>2,456</td>
+                            <td>3,123</td>
+                            <td>3,342</td>
+                            <td>3,536</td>
+                            <td class="font-bold">12,457</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold">Communities Served</td>
+                            <td>178</td>
+                            <td>234</td>
+                            <td>256</td>
+                            <td>224</td>
+                            <td class="font-bold">892</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold">Response Time (hrs)</td>
+                            <td>3.2</td>
+                            <td>2.8</td>
+                            <td>2.3</td>
+                            <td>2.4</td>
+                            <td class="font-bold">2.7 avg</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="watermark">American Red Cross</div>
+            </div>
+        </div>
+
+        <!-- Visualization Option 1: Wall Street Style Dashboard -->
+        <div class="mb-12">
+            <h2 class="text-2xl font-bold mb-6" style="color: var(--redcross-dark);">Option 1: Executive Performance Dashboard</h2>
+            
+            <!-- KPI Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+                <div class="metric-card p-4 rounded-lg">
+                    <p class="text-xs uppercase tracking-wider" style="color: var(--redcross-gray);">Total Coalitions</p>
+                    <p class="text-3xl font-bold mt-1" style="color: var(--redcross-red);">147</p>
+                    <p class="text-sm mt-2 text-green-600">↑ 23.5% YoY</p>
+                </div>
+                <div class="metric-card p-4 rounded-lg">
+                    <p class="text-xs uppercase tracking-wider" style="color: var(--redcross-gray);">Active Volunteers</p>
+                    <p class="text-3xl font-bold mt-1" style="color: var(--redcross-red);">3,842</p>
+                    <p class="text-sm mt-2 text-green-600">↑ 15.2% YoY</p>
+                </div>
+                <div class="metric-card p-4 rounded-lg">
+                    <p class="text-xs uppercase tracking-wider" style="color: var(--redcross-gray);">Services YTD</p>
+                    <p class="text-3xl font-bold mt-1" style="color: var(--redcross-red);">12.5K</p>
+                    <p class="text-sm mt-2 text-green-600">↑ 31.4% YoY</p>
+                </div>
+                <div class="metric-card p-4 rounded-lg">
+                    <p class="text-xs uppercase tracking-wider" style="color: var(--redcross-gray);">Communities</p>
+                    <p class="text-3xl font-bold mt-1" style="color: var(--redcross-red);">892</p>
+                    <p class="text-sm mt-2 text-green-600">↑ 18.7% YoY</p>
+                </div>
+                <div class="metric-card p-4 rounded-lg">
+                    <p class="text-xs uppercase tracking-wider" style="color: var(--redcross-gray);">Avg Response</p>
+                    <p class="text-3xl font-bold mt-1" style="color: var(--redcross-red);">2.7h</p>
+                    <p class="text-sm mt-2 text-green-600">↓ 25% Better</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="chart-container">
+                    <h3 class="text-lg font-semibold mb-4">Quarterly Performance Trend</h3>
+                    <canvas id="wallStreetChart1" height="300"></canvas>
+                    <div class="watermark">American Red Cross</div>
+                </div>
+                <div class="chart-container">
+                    <h3 class="text-lg font-semibold mb-4">Service Distribution Analysis</h3>
+                    <div id="plotlyChart1" style="height: 300px;"></div>
+                    <div class="watermark">American Red Cross</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visualization Option 2: Advanced Analytics -->
+        <div class="mb-12">
+            <h2 class="text-2xl font-bold mb-6" style="color: var(--redcross-dark);">Option 2: Advanced Analytics View</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="chart-container">
+                    <h3 class="text-lg font-semibold mb-4">Performance Waterfall</h3>
+                    <div id="waterfallChart" style="height: 350px;"></div>
+                    <div class="watermark">American Red Cross</div>
+                </div>
+                <div class="chart-container">
+                    <h3 class="text-lg font-semibold mb-4">Efficiency Matrix</h3>
+                    <canvas id="matrixChart" height="350"></canvas>
+                    <div class="watermark">American Red Cross</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visualization Option 3: Interactive 3D -->
+        <div class="mb-12">
+            <h2 class="text-2xl font-bold mb-6" style="color: var(--redcross-dark);">Option 3: Interactive 3D Analysis</h2>
+            <div class="chart-container">
+                <h3 class="text-lg font-semibold mb-4">Multi-Dimensional Performance Analysis</h3>
+                <div id="3dScatter" style="height: 500px;"></div>
+                <div class="watermark">American Red Cross</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Chart.js default colors to Red Cross palette
+        Chart.defaults.color = '#6D6E70';
+        Chart.defaults.font.family = 'Open Sans';
+        
+        // Wall Street Style Line Chart
+        const ctx1 = document.getElementById('wallStreetChart1').getContext('2d');
+        const gradient = ctx1.createLinearGradient(0, 0, 0, 300);
+        gradient.addColorStop(0, 'rgba(237, 27, 46, 0.3)');
+        gradient.addColorStop(1, 'rgba(237, 27, 46, 0.01)');
+
+        new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: ['Q1 2024', 'Q2 2024', 'Q3 2024', 'Q4 2024'],
+                datasets: [{
+                    label: 'Services Delivered',
+                    data: [2456, 3123, 3342, 3536],
+                    borderColor: '#ED1B2E',
+                    backgroundColor: gradient,
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 6,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#ED1B2E',
+                    pointBorderWidth: 3
+                }, {
+                    label: 'Volunteers x10',
+                    data: [8420, 10210, 9560, 10230],
+                    borderColor: '#00A0DF',
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0.4,
+                    borderDash: [5, 5]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 15
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // Plotly Sunburst Chart
+        var sunburstData = [{
+            type: "sunburst",
+            labels: ["Total Services", "Q1", "Q2", "Q3", "Q4", "Emergency", "Support", "Training", "Emergency", "Support", "Training", "Emergency", "Support", "Training", "Emergency", "Support", "Training"],
+            parents: ["", "Total Services", "Total Services", "Total Services", "Total Services", "Q1", "Q1", "Q1", "Q2", "Q2", "Q2", "Q3", "Q3", "Q3", "Q4", "Q4", "Q4"],
+            values: [12457, 2456, 3123, 3342, 3536, 1000, 900, 556, 1300, 1123, 700, 1400, 1242, 700, 1500, 1336, 700],
+            marker: {
+                colors: ['#ED1B2E', '#c41230', '#00A0DF', '#6D6E70', '#231F20']
+            }
+        }];
+
+        Plotly.newPlot('plotlyChart1', sunburstData, {
+            margin: {l: 0, r: 0, b: 0, t: 0},
+            paper_bgcolor: 'transparent',
+            font: {family: 'Open Sans'}
+        });
+
+        // Waterfall Chart
+        var waterfallTrace = {
+            name: "Performance Build",
+            type: "waterfall",
+            orientation: "v",
+            measure: ["relative", "relative", "relative", "relative", "total"],
+            x: ["Q1", "Q2", "Q3", "Q4", "Total"],
+            textposition: "outside",
+            text: ["+2,456", "+3,123", "+3,342", "+3,536", "12,457"],
+            y: [2456, 3123, 3342, 3536, 0],
+            connector: {
+                line: {color: "#6D6E70"}
+            },
+            increasing: {marker: {color: "#ED1B2E"}},
+            decreasing: {marker: {color: "#00A0DF"}},
+            totals: {marker: {color: "#231F20"}}
+        };
+
+        Plotly.newPlot('waterfallChart', [waterfallTrace], {
+            title: {text: "Service Delivery Build-Up"},
+            paper_bgcolor: 'transparent',
+            plot_bgcolor: 'transparent',
+            font: {family: 'Open Sans'},
+            showlegend: false
+        });
+
+        // Matrix Chart
+        const ctxMatrix = document.getElementById('matrixChart').getContext('2d');
+        new Chart(ctxMatrix, {
+            type: 'bubble',
+            data: {
+                datasets: [{
+                    label: 'Q1',
+                    data: [{x: 32, y: 842, r: 15}],
+                    backgroundColor: 'rgba(237, 27, 46, 0.7)'
+                }, {
+                    label: 'Q2',
+                    data: [{x: 41, y: 1021, r: 18}],
+                    backgroundColor: 'rgba(0, 160, 223, 0.7)'
+                }, {
+                    label: 'Q3',
+                    data: [{x: 38, y: 956, r: 17}],
+                    backgroundColor: 'rgba(109, 110, 112, 0.7)'
+                }, {
+                    label: 'Q4',
+                    data: [{x: 36, y: 1023, r: 19}],
+                    backgroundColor: 'rgba(35, 31, 32, 0.7)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        title: {display: true, text: 'Coalitions Formed'},
+                        grid: {color: 'rgba(0, 0, 0, 0.05)'}
+                    },
+                    y: {
+                        title: {display: true, text: 'Volunteers Recruited'},
+                        grid: {color: 'rgba(0, 0, 0, 0.05)'}
+                    }
+                }
+            }
+        });
+
+        // 3D Scatter Plot
+        var trace3d = {
+            x: [32, 41, 38, 36],
+            y: [842, 1021, 956, 1023],
+            z: [2456, 3123, 3342, 3536],
+            mode: 'markers+text',
+            marker: {
+                size: [20, 25, 23, 24],
+                color: ['#ED1B2E', '#00A0DF', '#6D6E70', '#231F20'],
+                opacity: 0.8,
+                line: {
+                    color: 'rgba(0, 0, 0, 0.3)',
+                    width: 2
+                }
+            },
+            text: ['Q1', 'Q2', 'Q3', 'Q4'],
+            textposition: 'top center',
+            type: 'scatter3d'
+        };
+
+        var layout3d = {
+            title: 'Quarterly Performance in 3D Space',
+            scene: {
+                xaxis: {title: 'Coalitions'},
+                yaxis: {title: 'Volunteers'},
+                zaxis: {title: 'Services'},
+                camera: {
+                    eye: {x: 1.5, y: 1.5, z: 1.5}
+                }
+            },
+            paper_bgcolor: 'transparent',
+            font: {family: 'Open Sans'}
+        };
+
+        Plotly.newPlot('3dScatter', [trace3d], layout3d);
+    </script>
+</body>
+</html>

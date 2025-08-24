@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Analytics - CAP</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-8">Advanced Analytics Dashboard</h1>
+        
+        <!-- 3D Surface Plot -->
+        <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+            <h2 class="text-xl font-semibold mb-4">3D Performance Surface</h2>
+            <div id="surface3d" style="height: 400px;"></div>
+        </div>
+
+        <!-- Heatmap -->
+        <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+            <h2 class="text-xl font-semibold mb-4">Activity Heatmap</h2>
+            <div id="heatmap" style="height: 400px;"></div>
+        </div>
+
+        <!-- Sankey Diagram -->
+        <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+            <h2 class="text-xl font-semibold mb-4">Resource Flow</h2>
+            <div id="sankey" style="height: 400px;"></div>
+        </div>
+
+        <!-- Correlation Matrix -->
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-xl font-semibold mb-4">Correlation Analysis</h2>
+            <canvas id="correlationChart" height="100"></canvas>
+        </div>
+    </div>
+
+    <script>
+        // 3D Surface Plot
+        var z_data = [];
+        for(var i=0; i<25; i++) {
+            z_data.push([]);
+            for(var j=0; j<25; j++) {
+                z_data[i].push(Math.sin(i/5) * Math.cos(j/5) + Math.random()*0.5);
+            }
+        }
+        
+        var surface3d = {
+            z: z_data,
+            type: 'surface',
+            colorscale: 'Viridis'
+        };
+        
+        Plotly.newPlot('surface3d', [surface3d], {
+            title: 'Performance Metrics Surface',
+            autosize: true,
+            margin: {l: 0, r: 0, b: 0, t: 40}
+        });
+
+        // Heatmap
+        var xValues = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        var yValues = ['12am-6am', '6am-12pm', '12pm-6pm', '6pm-12am'];
+        var zValues = [
+            [10, 20, 30, 25, 15, 10, 5],
+            [30, 60, 80, 70, 50, 30, 20],
+            [45, 75, 90, 85, 65, 40, 25],
+            [20, 35, 45, 40, 30, 20, 15]
+        ];
+        
+        var heatmapData = [{
+            x: xValues,
+            y: yValues,
+            z: zValues,
+            type: 'heatmap',
+            colorscale: 'YlOrRd'
+        }];
+        
+        Plotly.newPlot('heatmap', heatmapData, {
+            title: 'Weekly Activity Patterns',
+            xaxis: {title: 'Day of Week'},
+            yaxis: {title: 'Time Period'}
+        });
+
+        // Sankey Diagram
+        var sankeyData = {
+            type: "sankey",
+            node: {
+                pad: 15,
+                thickness: 20,
+                line: {color: "black", width: 0.5},
+                label: ["Funding", "Donations", "Grants", "Emergency", "Support", "Training", "Operations", "Direct Aid", "Infrastructure"],
+                color: ["blue", "blue", "blue", "red", "green", "orange", "purple", "yellow", "gray"]
+            },
+            link: {
+                source: [0, 1, 2, 0, 1, 2, 3, 4, 5, 6],
+                target: [3, 4, 5, 6, 6, 6, 7, 7, 8, 8],
+                value: [25, 30, 20, 15, 10, 15, 20, 25, 15, 20]
+            }
+        };
+        
+        Plotly.newPlot('sankey', [sankeyData], {
+            title: "Resource Allocation Flow",
+            font: {size: 10}
+        });
+
+        // Correlation Matrix
+        const correlationCtx = document.getElementById('correlationChart').getContext('2d');
+        new Chart(correlationCtx, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Volunteers vs Services',
+                    data: Array.from({length: 50}, () => ({
+                        x: Math.random() * 100,
+                        y: Math.random() * 100 * 0.8 + Math.random() * 20
+                    })),
+                    backgroundColor: 'rgba(59, 130, 246, 0.5)'
+                }, {
+                    label: 'Funding vs Impact',
+                    data: Array.from({length: 50}, () => ({
+                        x: Math.random() * 100,
+                        y: Math.random() * 100 * 0.9 + Math.random() * 10
+                    })),
+                    backgroundColor: 'rgba(34, 197, 94, 0.5)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {title: {display: true, text: 'Input Metric'}},
+                    y: {title: {display: true, text: 'Output Metric'}}
+                }
+            }
+        });
+    </script>
+</body>
+</html>
