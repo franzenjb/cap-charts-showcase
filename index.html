@@ -3,327 +3,1011 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coalition Assistance Program (CAP) Dashboard</title>
+    <title>CAP Charts Showcase - Complete Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .chart-container {
-            position: relative;
-            height: 400px;
-            margin: 20px 0;
+        @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
+        
+        :root {
+            --redcross-red: #ED1B2E;
+            --redcross-gray: #6D6E70;
+            --redcross-light-gray: #F5F5F5;
+            --redcross-dark: #231F20;
+            --redcross-accent: #00A0DF;
         }
+
+        body {
+            font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
+        }
+
+        .redcross-header {
+            background: linear-gradient(90deg, var(--redcross-red) 0%, #c41230 100%);
+            box-shadow: 0 4px 20px rgba(237, 27, 46, 0.2);
+        }
+
+        .tab-button {
+            padding: 12px 24px;
+            border: none;
+            background: transparent;
+            color: #6D6E70;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab-button:hover {
+            background: rgba(237, 27, 46, 0.05);
+        }
+
+        .tab-button.active {
+            color: var(--redcross-red);
+            border-bottom-color: var(--redcross-red);
+            background: white;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .metric-card {
+            background: white;
+            border-top: 4px solid var(--redcross-red);
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--redcross-red), var(--redcross-accent));
+        }
+
         .stat-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
+
+        .data-table {
+            font-size: 14px;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .data-table th {
+            background: var(--redcross-red);
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .data-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .data-table tr:hover {
+            background: #f9f9f9;
+        }
+
+        .watermark {
+            position: absolute;
+            bottom: 10px;
+            right: 15px;
+            opacity: 0.1;
+            font-size: 12px;
+            color: var(--redcross-red);
+        }
+
+        .chart-height {
+            height: 400px;
+        }
     </style>
 </head>
-<body class="bg-gray-100">
+<body>
+    <div class="redcross-header text-white p-6">
+        <div class="container mx-auto">
+            <h1 class="text-4xl font-bold">Coalition Assistance Program</h1>
+            <p class="text-xl mt-2 opacity-90">Complete Data Visualization Dashboard</p>
+        </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="bg-white shadow-md sticky top-0 z-10">
+        <div class="container mx-auto px-4">
+            <div class="flex overflow-x-auto">
+                <button class="tab-button active" onclick="showTab('overview')">Overview</button>
+                <button class="tab-button" onclick="showTab('wallstreet')">Wall Street Style</button>
+                <button class="tab-button" onclick="showTab('simple')">Simple Metrics</button>
+                <button class="tab-button" onclick="showTab('advanced')">Advanced Analytics</button>
+                <button class="tab-button" onclick="showTab('performance')">Performance</button>
+                <button class="tab-button" onclick="showTab('geographic')">Geographic</button>
+                <button class="tab-button" onclick="showTab('trends')">Trends</button>
+                <button class="tab-button" onclick="showTab('comparison')">Comparison</button>
+            </div>
+        </div>
+    </div>
+
     <div class="container mx-auto px-4 py-8">
-        <header class="mb-8">
-            <h1 class="text-4xl font-bold text-gray-800 mb-2">Coalition Assistance Program Dashboard</h1>
-            <p class="text-gray-600">Comprehensive Performance Metrics & Analytics</p>
-        </header>
+        <!-- Overview Tab -->
+        <div id="overview" class="tab-content active">
+            <h2 class="text-2xl font-bold mb-6" style="color: var(--redcross-dark);">Executive Overview</h2>
+            
+            <!-- KPI Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+                <div class="metric-card p-4 rounded-lg">
+                    <p class="text-xs uppercase tracking-wider" style="color: var(--redcross-gray);">Total Coalitions</p>
+                    <p class="text-3xl font-bold mt-1" style="color: var(--redcross-red);">147</p>
+                    <p class="text-sm mt-2 text-green-600">↑ 23.5% YoY</p>
+                </div>
+                <div class="metric-card p-4 rounded-lg">
+                    <p class="text-xs uppercase tracking-wider" style="color: var(--redcross-gray);">Active Volunteers</p>
+                    <p class="text-3xl font-bold mt-1" style="color: var(--redcross-red);">3,842</p>
+                    <p class="text-sm mt-2 text-green-600">↑ 15.2% YoY</p>
+                </div>
+                <div class="metric-card p-4 rounded-lg">
+                    <p class="text-xs uppercase tracking-wider" style="color: var(--redcross-gray);">Services YTD</p>
+                    <p class="text-3xl font-bold mt-1" style="color: var(--redcross-red);">12.5K</p>
+                    <p class="text-sm mt-2 text-green-600">↑ 31.4% YoY</p>
+                </div>
+                <div class="metric-card p-4 rounded-lg">
+                    <p class="text-xs uppercase tracking-wider" style="color: var(--redcross-gray);">Communities</p>
+                    <p class="text-3xl font-bold mt-1" style="color: var(--redcross-red);">892</p>
+                    <p class="text-sm mt-2 text-green-600">↑ 18.7% YoY</p>
+                </div>
+                <div class="metric-card p-4 rounded-lg">
+                    <p class="text-xs uppercase tracking-wider" style="color: var(--redcross-gray);">Avg Response</p>
+                    <p class="text-3xl font-bold mt-1" style="color: var(--redcross-red);">2.7h</p>
+                    <p class="text-sm mt-2 text-green-600">↓ 25% Better</p>
+                </div>
+            </div>
 
-        <!-- KPI Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <div class="stat-card text-white p-6 rounded-lg shadow-lg">
-                <h3 class="text-lg font-semibold mb-2">Total Coalitions</h3>
-                <p class="text-3xl font-bold">147</p>
-                <p class="text-sm mt-2">↑ 23% from last year</p>
+            <!-- Original Data Table -->
+            <div class="chart-container mb-8">
+                <h3 class="text-lg font-semibold mb-4">Source Data</h3>
+                <table class="data-table w-full">
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Q1 2024</th>
+                            <th>Q2 2024</th>
+                            <th>Q3 2024</th>
+                            <th>Q4 2024</th>
+                            <th>YTD Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="font-semibold">Coalitions Formed</td>
+                            <td>32</td>
+                            <td>41</td>
+                            <td>38</td>
+                            <td>36</td>
+                            <td class="font-bold">147</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold">Volunteers Recruited</td>
+                            <td>842</td>
+                            <td>1,021</td>
+                            <td>956</td>
+                            <td>1,023</td>
+                            <td class="font-bold">3,842</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold">Services Delivered</td>
+                            <td>2,456</td>
+                            <td>3,123</td>
+                            <td>3,342</td>
+                            <td>3,536</td>
+                            <td class="font-bold">12,457</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold">Communities Served</td>
+                            <td>178</td>
+                            <td>234</td>
+                            <td>256</td>
+                            <td>224</td>
+                            <td class="font-bold">892</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold">Response Time (hrs)</td>
+                            <td>3.2</td>
+                            <td>2.8</td>
+                            <td>2.3</td>
+                            <td>2.4</td>
+                            <td class="font-bold">2.7 avg</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="watermark">American Red Cross</div>
             </div>
-            <div class="bg-gradient-to-r from-green-500 to-teal-600 text-white p-6 rounded-lg shadow-lg">
-                <h3 class="text-lg font-semibold mb-2">Active Volunteers</h3>
-                <p class="text-3xl font-bold">3,842</p>
-                <p class="text-sm mt-2">↑ 15% this quarter</p>
-            </div>
-            <div class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-6 rounded-lg shadow-lg">
-                <h3 class="text-lg font-semibold mb-2">Services Delivered</h3>
-                <p class="text-3xl font-bold">12,457</p>
-                <p class="text-sm mt-2">↑ 31% YTD</p>
-            </div>
-            <div class="bg-gradient-to-r from-orange-500 to-red-600 text-white p-6 rounded-lg shadow-lg">
-                <h3 class="text-lg font-semibold mb-2">Avg Response Time</h3>
-                <p class="text-3xl font-bold">2.4 hrs</p>
-                <p class="text-sm mt-2">↓ 18% improvement</p>
+
+            <!-- Overview Charts -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="chart-container">
+                    <h3 class="text-lg font-semibold mb-4">Quarterly Performance</h3>
+                    <canvas id="overviewChart1" class="chart-height"></canvas>
+                    <div class="watermark">American Red Cross</div>
+                </div>
+                <div class="chart-container">
+                    <h3 class="text-lg font-semibold mb-4">Service Distribution</h3>
+                    <canvas id="overviewChart2" class="chart-height"></canvas>
+                    <div class="watermark">American Red Cross</div>
+                </div>
             </div>
         </div>
 
-        <!-- Charts Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Coalition Growth Chart -->
-            <div class="bg-white p-6 rounded-lg shadow-lg">
-                <h2 class="text-xl font-semibold mb-4 text-gray-800">Coalition Growth Trend</h2>
+        <!-- Wall Street Style Tab -->
+        <div id="wallstreet" class="tab-content">
+            <h2 class="text-2xl font-bold mb-6" style="color: var(--redcross-dark);">Wall Street Style Analytics</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div class="chart-container">
-                    <canvas id="growthChart"></canvas>
+                    <h3 class="text-lg font-semibold mb-4">Performance Trend Analysis</h3>
+                    <canvas id="wallStreetChart1" class="chart-height"></canvas>
+                    <div class="watermark">American Red Cross</div>
                 </div>
-            </div>
-
-            <!-- Volunteer Trend Chart -->
-            <div class="bg-white p-6 rounded-lg shadow-lg">
-                <h2 class="text-xl font-semibold mb-4 text-gray-800">Volunteer Engagement</h2>
                 <div class="chart-container">
-                    <canvas id="volunteerChart"></canvas>
+                    <h3 class="text-lg font-semibold mb-4">Service Sunburst</h3>
+                    <div id="wallStreetPlotly1" class="chart-height"></div>
+                    <div class="watermark">American Red Cross</div>
                 </div>
-            </div>
-
-            <!-- Service Distribution Chart -->
-            <div class="bg-white p-6 rounded-lg shadow-lg">
-                <h2 class="text-xl font-semibold mb-4 text-gray-800">Service Distribution</h2>
                 <div class="chart-container">
-                    <canvas id="serviceChart"></canvas>
+                    <h3 class="text-lg font-semibold mb-4">Waterfall Analysis</h3>
+                    <div id="waterfallChart" class="chart-height"></div>
+                    <div class="watermark">American Red Cross</div>
                 </div>
-            </div>
-
-            <!-- Regional Performance Chart -->
-            <div class="bg-white p-6 rounded-lg shadow-lg">
-                <h2 class="text-xl font-semibold mb-4 text-gray-800">Regional Performance</h2>
                 <div class="chart-container">
-                    <canvas id="regionalChart"></canvas>
-                </div>
-            </div>
-
-            <!-- Response Time Analysis -->
-            <div class="bg-white p-6 rounded-lg shadow-lg">
-                <h2 class="text-xl font-semibold mb-4 text-gray-800">Response Time Analysis</h2>
-                <div class="chart-container">
-                    <canvas id="responseChart"></canvas>
-                </div>
-            </div>
-
-            <!-- Coalition Network Map -->
-            <div class="bg-white p-6 rounded-lg shadow-lg">
-                <h2 class="text-xl font-semibold mb-4 text-gray-800">Coalition Network Density</h2>
-                <div class="chart-container">
-                    <canvas id="networkChart"></canvas>
+                    <h3 class="text-lg font-semibold mb-4">Efficiency Matrix</h3>
+                    <canvas id="matrixChart" class="chart-height"></canvas>
+                    <div class="watermark">American Red Cross</div>
                 </div>
             </div>
         </div>
 
-        <!-- Impact Metrics -->
-        <div class="mt-8 bg-white p-6 rounded-lg shadow-lg">
-            <h2 class="text-xl font-semibold mb-4 text-gray-800">Impact Metrics Overview</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="border-l-4 border-blue-500 pl-4">
-                    <h3 class="font-semibold text-gray-700">Communities Served</h3>
-                    <p class="text-2xl font-bold text-gray-900">892</p>
-                    <p class="text-sm text-gray-600">Across 47 states</p>
+        <!-- Simple Metrics Tab -->
+        <div id="simple" class="tab-content">
+            <h2 class="text-2xl font-bold mb-6" style="color: var(--redcross-dark);">Simple Metrics</h2>
+            
+            <!-- Simple KPI Cards -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div class="bg-white p-4 rounded shadow">
+                    <h3 class="text-sm text-gray-600">Total Members</h3>
+                    <p class="text-2xl font-bold text-blue-600">3,842</p>
                 </div>
-                <div class="border-l-4 border-green-500 pl-4">
-                    <h3 class="font-semibold text-gray-700">Families Assisted</h3>
-                    <p class="text-2xl font-bold text-gray-900">45,721</p>
-                    <p class="text-sm text-gray-600">This fiscal year</p>
+                <div class="bg-white p-4 rounded shadow">
+                    <h3 class="text-sm text-gray-600">Active Projects</h3>
+                    <p class="text-2xl font-bold text-green-600">147</p>
                 </div>
-                <div class="border-l-4 border-purple-500 pl-4">
-                    <h3 class="font-semibold text-gray-700">Training Hours</h3>
-                    <p class="text-2xl font-bold text-gray-900">18,342</p>
-                    <p class="text-sm text-gray-600">Volunteer development</p>
+                <div class="bg-white p-4 rounded shadow">
+                    <h3 class="text-sm text-gray-600">Completion Rate</h3>
+                    <p class="text-2xl font-bold text-purple-600">87%</p>
+                </div>
+                <div class="bg-white p-4 rounded shadow">
+                    <h3 class="text-sm text-gray-600">Avg Score</h3>
+                    <p class="text-2xl font-bold text-orange-600">4.5/5</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="chart-container">
+                    <h3 class="text-lg font-semibold mb-4">Monthly Progress</h3>
+                    <canvas id="simpleChart1" class="chart-height"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3 class="text-lg font-semibold mb-4">Category Distribution</h3>
+                    <canvas id="simpleChart2" class="chart-height"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Advanced Analytics Tab -->
+        <div id="advanced" class="tab-content">
+            <h2 class="text-2xl font-bold mb-6" style="color: var(--redcross-dark);">Advanced Analytics</h2>
+            <div class="grid grid-cols-1 gap-6">
+                <div class="chart-container">
+                    <h3 class="text-lg font-semibold mb-4">3D Performance Surface</h3>
+                    <div id="surface3d" class="chart-height"></div>
+                </div>
+                <div class="chart-container">
+                    <h3 class="text-lg font-semibold mb-4">Activity Heatmap</h3>
+                    <div id="heatmap" class="chart-height"></div>
+                </div>
+                <div class="chart-container">
+                    <h3 class="text-lg font-semibold mb-4">Resource Flow</h3>
+                    <div id="sankey" class="chart-height"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Tab -->
+        <div id="performance" class="tab-content">
+            <h2 class="text-2xl font-bold mb-6" style="color: var(--redcross-dark);">Performance Metrics</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="chart-container">
+                    <h3 class="text-lg font-semibold mb-4">Quarterly Growth</h3>
+                    <canvas id="perfChart1" class="chart-height"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3 class="text-lg font-semibold mb-4">Volunteer Engagement</h3>
+                    <canvas id="perfChart2" class="chart-height"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3 class="text-lg font-semibold mb-4">Service Efficiency</h3>
+                    <canvas id="perfChart3" class="chart-height"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3 class="text-lg font-semibold mb-4">Response Time Trend</h3>
+                    <canvas id="perfChart4" class="chart-height"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Geographic Tab -->
+        <div id="geographic" class="tab-content">
+            <h2 class="text-2xl font-bold mb-6" style="color: var(--redcross-dark);">Geographic Analysis</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="chart-container">
+                    <h3 class="text-lg font-semibold mb-4">Regional Distribution</h3>
+                    <canvas id="geoChart1" class="chart-height"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3 class="text-lg font-semibold mb-4">Coalition Network Density</h3>
+                    <canvas id="geoChart2" class="chart-height"></canvas>
+                </div>
+                <div class="chart-container col-span-2">
+                    <h3 class="text-lg font-semibold mb-4">Service Coverage Map</h3>
+                    <div id="coverageMap" class="chart-height"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trends Tab -->
+        <div id="trends" class="tab-content">
+            <h2 class="text-2xl font-bold mb-6" style="color: var(--redcross-dark);">Trend Analysis</h2>
+            <div class="grid grid-cols-1 gap-6">
+                <div class="chart-container">
+                    <h3 class="text-lg font-semibold mb-4">12-Month Rolling Trend</h3>
+                    <canvas id="trendChart1" class="chart-height"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3 class="text-lg font-semibold mb-4">Seasonal Patterns</h3>
+                    <div id="seasonalChart" class="chart-height"></div>
+                </div>
+                <div class="chart-container">
+                    <h3 class="text-lg font-semibold mb-4">Predictive Forecast</h3>
+                    <canvas id="forecastChart" class="chart-height"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison Tab -->
+        <div id="comparison" class="tab-content">
+            <h2 class="text-2xl font-bold mb-6" style="color: var(--redcross-dark);">Comparative Analysis</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="chart-container">
+                    <h3 class="text-lg font-semibold mb-4">Year-over-Year Comparison</h3>
+                    <canvas id="compChart1" class="chart-height"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3 class="text-lg font-semibold mb-4">Regional Performance Radar</h3>
+                    <canvas id="compChart2" class="chart-height"></canvas>
+                </div>
+                <div class="chart-container col-span-2">
+                    <h3 class="text-lg font-semibold mb-4">Multi-Metric Correlation</h3>
+                    <div id="correlationPlot" class="chart-height"></div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Coalition Growth Chart
-        const growthCtx = document.getElementById('growthChart').getContext('2d');
-        new Chart(growthCtx, {
-            type: 'line',
-            data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                datasets: [{
-                    label: 'New Coalitions',
-                    data: [8, 12, 15, 11, 18, 22, 19, 24, 21, 17, 14, 16],
-                    borderColor: 'rgb(99, 102, 241)',
-                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                    tension: 0.4
-                }, {
-                    label: 'Active Coalitions',
-                    data: [95, 98, 105, 112, 118, 125, 130, 135, 139, 142, 145, 147],
-                    borderColor: 'rgb(34, 197, 94)',
-                    backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    }
-                }
-            }
-        });
+        // Tab switching function
+        function showTab(tabName) {
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Remove active class from all buttons
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Activate corresponding button
+            event.target.classList.add('active');
+            
+            // Initialize charts for the selected tab if not already done
+            initializeTabCharts(tabName);
+        }
 
-        // Volunteer Trend Chart
-        const volunteerCtx = document.getElementById('volunteerChart').getContext('2d');
-        new Chart(volunteerCtx, {
-            type: 'bar',
-            data: {
-                labels: ['Q1', 'Q2', 'Q3', 'Q4'],
-                datasets: [{
-                    label: 'New Volunteers',
-                    data: [450, 620, 580, 712],
-                    backgroundColor: 'rgba(59, 130, 246, 0.8)'
-                }, {
-                    label: 'Returning Volunteers',
-                    data: [1200, 1350, 1420, 1480],
-                    backgroundColor: 'rgba(16, 185, 129, 0.8)'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: {
-                        stacked: true
-                    },
-                    y: {
-                        stacked: true
-                    }
-                }
-            }
-        });
+        // Chart initialization flags
+        const chartsInitialized = {
+            overview: false,
+            wallstreet: false,
+            simple: false,
+            advanced: false,
+            performance: false,
+            geographic: false,
+            trends: false,
+            comparison: false
+        };
 
-        // Service Distribution Chart
-        const serviceCtx = document.getElementById('serviceChart').getContext('2d');
-        new Chart(serviceCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Emergency Response', 'Disaster Preparedness', 'Community Support', 'Health Services', 'Education'],
-                datasets: [{
-                    data: [3421, 2856, 2342, 2198, 1640],
-                    backgroundColor: [
-                        'rgba(239, 68, 68, 0.8)',
-                        'rgba(245, 158, 11, 0.8)',
-                        'rgba(59, 130, 246, 0.8)',
-                        'rgba(16, 185, 129, 0.8)',
-                        'rgba(139, 92, 246, 0.8)'
-                    ]
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'right'
-                    }
-                }
-            }
-        });
+        // Initialize charts for each tab
+        function initializeTabCharts(tabName) {
+            if (chartsInitialized[tabName]) return;
+            chartsInitialized[tabName] = true;
 
-        // Regional Performance Chart
-        const regionalCtx = document.getElementById('regionalChart').getContext('2d');
-        new Chart(regionalCtx, {
-            type: 'radar',
-            data: {
-                labels: ['Northeast', 'Southeast', 'Midwest', 'Southwest', 'West', 'Northwest'],
-                datasets: [{
-                    label: 'Service Coverage',
-                    data: [85, 92, 78, 88, 90, 75],
-                    borderColor: 'rgb(99, 102, 241)',
-                    backgroundColor: 'rgba(99, 102, 241, 0.2)'
-                }, {
-                    label: 'Volunteer Strength',
-                    data: [78, 88, 82, 76, 85, 72],
-                    borderColor: 'rgb(34, 197, 94)',
-                    backgroundColor: 'rgba(34, 197, 94, 0.2)'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    r: {
-                        beginAtZero: true,
-                        max: 100
-                    }
-                }
-            }
-        });
+            Chart.defaults.color = '#6D6E70';
+            Chart.defaults.font.family = 'Open Sans';
 
-        // Response Time Chart
-        const responseCtx = document.getElementById('responseChart').getContext('2d');
-        new Chart(responseCtx, {
-            type: 'line',
-            data: {
-                labels: ['6am', '9am', '12pm', '3pm', '6pm', '9pm'],
-                datasets: [{
-                    label: 'Average Response Time (hours)',
-                    data: [3.2, 2.1, 1.8, 2.2, 2.8, 3.5],
-                    borderColor: 'rgb(239, 68, 68)',
-                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Hours'
-                        }
-                    }
-                }
+            switch(tabName) {
+                case 'overview':
+                    initOverviewCharts();
+                    break;
+                case 'wallstreet':
+                    initWallStreetCharts();
+                    break;
+                case 'simple':
+                    initSimpleCharts();
+                    break;
+                case 'advanced':
+                    initAdvancedCharts();
+                    break;
+                case 'performance':
+                    initPerformanceCharts();
+                    break;
+                case 'geographic':
+                    initGeographicCharts();
+                    break;
+                case 'trends':
+                    initTrendsCharts();
+                    break;
+                case 'comparison':
+                    initComparisonCharts();
+                    break;
             }
-        });
+        }
 
-        // Coalition Network Chart (Bubble Chart)
-        const networkCtx = document.getElementById('networkChart').getContext('2d');
-        new Chart(networkCtx, {
-            type: 'bubble',
-            data: {
-                datasets: [{
-                    label: 'Urban Coalitions',
-                    data: [
-                        {x: 20, y: 30, r: 15},
-                        {x: 40, y: 45, r: 20},
-                        {x: 60, y: 55, r: 18},
-                        {x: 35, y: 65, r: 12}
-                    ],
-                    backgroundColor: 'rgba(99, 102, 241, 0.6)'
-                }, {
-                    label: 'Rural Coalitions',
-                    data: [
-                        {x: 25, y: 50, r: 10},
-                        {x: 55, y: 35, r: 8},
-                        {x: 70, y: 70, r: 14},
-                        {x: 45, y: 25, r: 11}
-                    ],
-                    backgroundColor: 'rgba(34, 197, 94, 0.6)'
-                }, {
-                    label: 'Suburban Coalitions',
-                    data: [
-                        {x: 30, y: 40, r: 13},
-                        {x: 50, y: 60, r: 16},
-                        {x: 65, y: 45, r: 9},
-                        {x: 40, y: 55, r: 15}
-                    ],
-                    backgroundColor: 'rgba(245, 158, 11, 0.6)'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Geographic Coverage (%)'
-                        }
-                    },
-                    y: {
-                        title: {
-                            display: true,
-                            text: 'Service Effectiveness (%)'
-                        }
-                    }
+        // Overview Charts
+        function initOverviewCharts() {
+            // Quarterly Performance Chart
+            const ctx1 = document.getElementById('overviewChart1').getContext('2d');
+            new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: ['Q1 2024', 'Q2 2024', 'Q3 2024', 'Q4 2024'],
+                    datasets: [{
+                        label: 'Services Delivered',
+                        data: [2456, 3123, 3342, 3536],
+                        borderColor: '#ED1B2E',
+                        backgroundColor: 'rgba(237, 27, 46, 0.1)',
+                        tension: 0.4
+                    }, {
+                        label: 'Volunteers (x10)',
+                        data: [8420, 10210, 9560, 10230],
+                        borderColor: '#00A0DF',
+                        backgroundColor: 'rgba(0, 160, 223, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            // Service Distribution
+            const ctx2 = document.getElementById('overviewChart2').getContext('2d');
+            new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Emergency Response', 'Disaster Prep', 'Community Support', 'Health Services', 'Education'],
+                    datasets: [{
+                        data: [3421, 2856, 2342, 2198, 1640],
+                        backgroundColor: [
+                            '#ED1B2E',
+                            '#00A0DF',
+                            '#6D6E70',
+                            '#231F20',
+                            '#F5F5F5'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        // Wall Street Charts
+        function initWallStreetCharts() {
+            // Line Chart with Gradient
+            const ctx1 = document.getElementById('wallStreetChart1').getContext('2d');
+            const gradient = ctx1.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(237, 27, 46, 0.3)');
+            gradient.addColorStop(1, 'rgba(237, 27, 46, 0.01)');
+
+            new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: ['Q1 2024', 'Q2 2024', 'Q3 2024', 'Q4 2024'],
+                    datasets: [{
+                        label: 'Services Delivered',
+                        data: [2456, 3123, 3342, 3536],
+                        borderColor: '#ED1B2E',
+                        backgroundColor: gradient,
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            // Sunburst Chart
+            var sunburstData = [{
+                type: "sunburst",
+                labels: ["Total", "Q1", "Q2", "Q3", "Q4"],
+                parents: ["", "Total", "Total", "Total", "Total"],
+                values: [12457, 2456, 3123, 3342, 3536],
+                marker: {colors: ['#ED1B2E', '#c41230', '#00A0DF', '#6D6E70', '#231F20']}
+            }];
+            Plotly.newPlot('wallStreetPlotly1', sunburstData, {
+                margin: {l: 0, r: 0, b: 0, t: 0},
+                paper_bgcolor: 'transparent'
+            });
+
+            // Waterfall Chart
+            var waterfallTrace = {
+                type: "waterfall",
+                x: ["Q1", "Q2", "Q3", "Q4", "Total"],
+                y: [2456, 3123, 3342, 3536, 0],
+                measure: ["relative", "relative", "relative", "relative", "total"],
+                increasing: {marker: {color: "#ED1B2E"}},
+                totals: {marker: {color: "#231F20"}}
+            };
+            Plotly.newPlot('waterfallChart', [waterfallTrace], {
+                paper_bgcolor: 'transparent',
+                showlegend: false
+            });
+
+            // Matrix Chart
+            const ctxMatrix = document.getElementById('matrixChart').getContext('2d');
+            new Chart(ctxMatrix, {
+                type: 'bubble',
+                data: {
+                    datasets: [{
+                        label: 'Q1',
+                        data: [{x: 32, y: 842, r: 15}],
+                        backgroundColor: 'rgba(237, 27, 46, 0.7)'
+                    }, {
+                        label: 'Q2',
+                        data: [{x: 41, y: 1021, r: 18}],
+                        backgroundColor: 'rgba(0, 160, 223, 0.7)'
+                    }, {
+                        label: 'Q3',
+                        data: [{x: 38, y: 956, r: 17}],
+                        backgroundColor: 'rgba(109, 110, 112, 0.7)'
+                    }, {
+                        label: 'Q4',
+                        data: [{x: 36, y: 1023, r: 19}],
+                        backgroundColor: 'rgba(35, 31, 32, 0.7)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        // Simple Charts
+        function initSimpleCharts() {
+            // Monthly Progress
+            new Chart(document.getElementById('simpleChart1'), {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Progress',
+                        data: [65, 72, 78, 81, 85, 87],
+                        borderColor: '#ED1B2E',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            // Category Distribution
+            new Chart(document.getElementById('simpleChart2'), {
+                type: 'pie',
+                data: {
+                    labels: ['Emergency', 'Support', 'Training', 'Admin'],
+                    datasets: [{
+                        data: [35, 30, 20, 15],
+                        backgroundColor: ['#ED1B2E', '#00A0DF', '#6D6E70', '#231F20']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        // Advanced Charts
+        function initAdvancedCharts() {
+            // 3D Surface
+            var z_data = [];
+            for(var i=0; i<25; i++) {
+                z_data.push([]);
+                for(var j=0; j<25; j++) {
+                    z_data[i].push(Math.sin(i/5) * Math.cos(j/5) + Math.random()*0.5);
                 }
             }
+            
+            Plotly.newPlot('surface3d', [{
+                z: z_data,
+                type: 'surface',
+                colorscale: 'Viridis'
+            }], {
+                title: 'Performance Metrics Surface',
+                autosize: true,
+                margin: {l: 0, r: 0, b: 0, t: 40}
+            });
+
+            // Heatmap
+            var heatmapData = [{
+                x: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                y: ['12am-6am', '6am-12pm', '12pm-6pm', '6pm-12am'],
+                z: [[10, 20, 30, 25, 15, 10, 5],
+                    [30, 60, 80, 70, 50, 30, 20],
+                    [45, 75, 90, 85, 65, 40, 25],
+                    [20, 35, 45, 40, 30, 20, 15]],
+                type: 'heatmap',
+                colorscale: 'YlOrRd'
+            }];
+            
+            Plotly.newPlot('heatmap', heatmapData, {
+                title: 'Weekly Activity Patterns'
+            });
+
+            // Sankey Diagram
+            var sankeyData = {
+                type: "sankey",
+                node: {
+                    pad: 15,
+                    thickness: 20,
+                    line: {color: "black", width: 0.5},
+                    label: ["Funding", "Donations", "Grants", "Emergency", "Support", "Training"],
+                    color: ["blue", "blue", "blue", "red", "green", "orange"]
+                },
+                link: {
+                    source: [0, 1, 2, 0, 1, 2],
+                    target: [3, 4, 5, 4, 5, 3],
+                    value: [25, 30, 20, 15, 10, 15]
+                }
+            };
+            
+            Plotly.newPlot('sankey', [sankeyData], {
+                title: "Resource Allocation Flow"
+            });
+        }
+
+        // Performance Charts
+        function initPerformanceCharts() {
+            // Quarterly Growth
+            new Chart(document.getElementById('perfChart1'), {
+                type: 'bar',
+                data: {
+                    labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                    datasets: [{
+                        label: 'Coalitions',
+                        data: [32, 41, 38, 36],
+                        backgroundColor: '#ED1B2E'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            // Volunteer Engagement
+            new Chart(document.getElementById('perfChart2'), {
+                type: 'bar',
+                data: {
+                    labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                    datasets: [{
+                        label: 'New',
+                        data: [450, 620, 580, 712],
+                        backgroundColor: '#00A0DF'
+                    }, {
+                        label: 'Returning',
+                        data: [392, 401, 376, 311],
+                        backgroundColor: '#6D6E70'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {x: {stacked: true}, y: {stacked: true}}
+                }
+            });
+
+            // Service Efficiency
+            new Chart(document.getElementById('perfChart3'), {
+                type: 'line',
+                data: {
+                    labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                    datasets: [{
+                        label: 'Services per Volunteer',
+                        data: [2.9, 3.1, 3.5, 3.5],
+                        borderColor: '#ED1B2E',
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            // Response Time
+            new Chart(document.getElementById('perfChart4'), {
+                type: 'line',
+                data: {
+                    labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                    datasets: [{
+                        label: 'Avg Response (hours)',
+                        data: [3.2, 2.8, 2.3, 2.4],
+                        borderColor: '#00A0DF',
+                        backgroundColor: 'rgba(0, 160, 223, 0.1)',
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        // Geographic Charts
+        function initGeographicCharts() {
+            // Regional Distribution
+            new Chart(document.getElementById('geoChart1'), {
+                type: 'radar',
+                data: {
+                    labels: ['Northeast', 'Southeast', 'Midwest', 'Southwest', 'West', 'Northwest'],
+                    datasets: [{
+                        label: 'Service Coverage',
+                        data: [85, 92, 78, 88, 90, 75],
+                        borderColor: '#ED1B2E',
+                        backgroundColor: 'rgba(237, 27, 46, 0.2)'
+                    }, {
+                        label: 'Volunteer Strength',
+                        data: [78, 88, 82, 76, 85, 72],
+                        borderColor: '#00A0DF',
+                        backgroundColor: 'rgba(0, 160, 223, 0.2)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            // Network Density
+            new Chart(document.getElementById('geoChart2'), {
+                type: 'bubble',
+                data: {
+                    datasets: [{
+                        label: 'Urban',
+                        data: [{x: 20, y: 30, r: 15}, {x: 40, y: 45, r: 20}],
+                        backgroundColor: 'rgba(237, 27, 46, 0.6)'
+                    }, {
+                        label: 'Rural',
+                        data: [{x: 25, y: 50, r: 10}, {x: 55, y: 35, r: 8}],
+                        backgroundColor: 'rgba(0, 160, 223, 0.6)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            // Coverage Map
+            var mapData = [{
+                type: 'scattergeo',
+                locationmode: 'USA-states',
+                lon: [-120, -100, -80, -75],
+                lat: [35, 40, 35, 40],
+                text: ['West', 'Central', 'South', 'Northeast'],
+                mode: 'markers',
+                marker: {
+                    size: [20, 30, 25, 35],
+                    color: ['#ED1B2E', '#00A0DF', '#6D6E70', '#231F20']
+                }
+            }];
+            
+            Plotly.newPlot('coverageMap', mapData, {
+                geo: {scope: 'usa'},
+                title: 'Coalition Coverage'
+            });
+        }
+
+        // Trends Charts
+        function initTrendsCharts() {
+            // 12-Month Trend
+            new Chart(document.getElementById('trendChart1'), {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: 'Services',
+                        data: [950, 1020, 1100, 1050, 1200, 1150, 1080, 1120, 1090, 1180, 1100, 1200],
+                        borderColor: '#ED1B2E',
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            // Seasonal Patterns
+            var seasonalData = [{
+                x: ['Spring', 'Summer', 'Fall', 'Winter'],
+                y: [3200, 3800, 3100, 2357],
+                type: 'bar',
+                marker: {color: '#ED1B2E'}
+            }];
+            
+            Plotly.newPlot('seasonalChart', seasonalData, {
+                title: 'Seasonal Service Patterns'
+            });
+
+            // Forecast
+            new Chart(document.getElementById('forecastChart'), {
+                type: 'line',
+                data: {
+                    labels: ['Q1', 'Q2', 'Q3', 'Q4', 'Q1 2025', 'Q2 2025'],
+                    datasets: [{
+                        label: 'Actual',
+                        data: [2456, 3123, 3342, 3536, null, null],
+                        borderColor: '#ED1B2E'
+                    }, {
+                        label: 'Forecast',
+                        data: [null, null, null, 3536, 3750, 3900],
+                        borderColor: '#00A0DF',
+                        borderDash: [5, 5]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        // Comparison Charts
+        function initComparisonCharts() {
+            // Year-over-Year
+            new Chart(document.getElementById('compChart1'), {
+                type: 'bar',
+                data: {
+                    labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                    datasets: [{
+                        label: '2023',
+                        data: [1950, 2500, 2700, 2850],
+                        backgroundColor: '#6D6E70'
+                    }, {
+                        label: '2024',
+                        data: [2456, 3123, 3342, 3536],
+                        backgroundColor: '#ED1B2E'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            // Regional Radar
+            new Chart(document.getElementById('compChart2'), {
+                type: 'radar',
+                data: {
+                    labels: ['Efficiency', 'Coverage', 'Response', 'Quality', 'Growth'],
+                    datasets: [{
+                        label: 'East',
+                        data: [85, 90, 75, 88, 82],
+                        borderColor: '#ED1B2E',
+                        backgroundColor: 'rgba(237, 27, 46, 0.2)'
+                    }, {
+                        label: 'West',
+                        data: [78, 85, 82, 90, 75],
+                        borderColor: '#00A0DF',
+                        backgroundColor: 'rgba(0, 160, 223, 0.2)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            // Correlation Plot
+            var trace1 = {
+                x: [32, 41, 38, 36],
+                y: [2456, 3123, 3342, 3536],
+                mode: 'markers',
+                type: 'scatter',
+                name: 'Coalitions vs Services',
+                marker: {size: 12, color: '#ED1B2E'}
+            };
+            
+            var trace2 = {
+                x: [842, 1021, 956, 1023],
+                y: [2456, 3123, 3342, 3536],
+                mode: 'markers',
+                type: 'scatter',
+                name: 'Volunteers vs Services',
+                marker: {size: 12, color: '#00A0DF'}
+            };
+            
+            Plotly.newPlot('correlationPlot', [trace1, trace2], {
+                title: 'Multi-Metric Correlation Analysis',
+                xaxis: {title: 'Input Metrics'},
+                yaxis: {title: 'Services Delivered'}
+            });
+        }
+
+        // Initialize Overview charts on page load
+        window.addEventListener('load', () => {
+            initializeTabCharts('overview');
         });
     </script>
 </body>
