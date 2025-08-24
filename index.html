@@ -131,8 +131,15 @@
             color: var(--redcross-red);
         }
 
-        .chart-height {
+        .chart-wrapper {
+            position: relative;
             height: 400px;
+            width: 100%;
+        }
+        
+        canvas {
+            max-width: 100% !important;
+            height: auto !important;
         }
     </style>
 </head>
@@ -258,12 +265,16 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div class="chart-container">
                     <h3 class="text-lg font-semibold mb-4">Quarterly Performance</h3>
-                    <canvas id="overviewChart1" class="chart-height"></canvas>
+                    <div class="chart-wrapper">
+                        <canvas id="overviewChart1"></canvas>
+                    </div>
                     <div class="watermark">American Red Cross</div>
                 </div>
                 <div class="chart-container">
                     <h3 class="text-lg font-semibold mb-4">Service Distribution</h3>
-                    <canvas id="overviewChart2" class="chart-height"></canvas>
+                    <div class="chart-wrapper">
+                        <canvas id="overviewChart2"></canvas>
+                    </div>
                     <div class="watermark">American Red Cross</div>
                 </div>
             </div>
@@ -275,22 +286,26 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div class="chart-container">
                     <h3 class="text-lg font-semibold mb-4">Performance Trend Analysis</h3>
-                    <canvas id="wallStreetChart1" class="chart-height"></canvas>
+                    <div class="chart-wrapper">
+                        <canvas id="wallStreetChart1"></canvas>
+                    </div>
                     <div class="watermark">American Red Cross</div>
                 </div>
                 <div class="chart-container">
                     <h3 class="text-lg font-semibold mb-4">Service Sunburst</h3>
-                    <div id="wallStreetPlotly1" class="chart-height"></div>
+                    <div id="wallStreetPlotly1" class="chart-wrapper"></div>
                     <div class="watermark">American Red Cross</div>
                 </div>
                 <div class="chart-container">
                     <h3 class="text-lg font-semibold mb-4">Waterfall Analysis</h3>
-                    <div id="waterfallChart" class="chart-height"></div>
+                    <div id="waterfallChart" class="chart-wrapper"></div>
                     <div class="watermark">American Red Cross</div>
                 </div>
                 <div class="chart-container">
                     <h3 class="text-lg font-semibold mb-4">Efficiency Matrix</h3>
-                    <canvas id="matrixChart" class="chart-height"></canvas>
+                    <div class="chart-wrapper">
+                        <canvas id="matrixChart"></canvas>
+                    </div>
                     <div class="watermark">American Red Cross</div>
                 </div>
             </div>
@@ -323,11 +338,15 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="chart-container">
                     <h3 class="text-lg font-semibold mb-4">Monthly Progress</h3>
-                    <canvas id="simpleChart1" class="chart-height"></canvas>
+                    <div class="chart-wrapper">
+                        <canvas id="simpleChart1"></canvas>
+                    </div>
                 </div>
                 <div class="chart-container">
                     <h3 class="text-lg font-semibold mb-4">Category Distribution</h3>
-                    <canvas id="simpleChart2" class="chart-height"></canvas>
+                    <div class="chart-wrapper">
+                        <canvas id="simpleChart2"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
@@ -338,15 +357,15 @@
             <div class="grid grid-cols-1 gap-6">
                 <div class="chart-container">
                     <h3 class="text-lg font-semibold mb-4">3D Performance Surface</h3>
-                    <div id="surface3d" class="chart-height"></div>
+                    <div id="surface3d" class="chart-wrapper"></div>
                 </div>
                 <div class="chart-container">
                     <h3 class="text-lg font-semibold mb-4">Activity Heatmap</h3>
-                    <div id="heatmap" class="chart-height"></div>
+                    <div id="heatmap" class="chart-wrapper"></div>
                 </div>
                 <div class="chart-container">
                     <h3 class="text-lg font-semibold mb-4">Resource Flow</h3>
-                    <div id="sankey" class="chart-height"></div>
+                    <div id="sankey" class="chart-wrapper"></div>
                 </div>
             </div>
         </div>
@@ -357,19 +376,27 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div class="chart-container">
                     <h3 class="text-lg font-semibold mb-4">Quarterly Growth</h3>
-                    <canvas id="perfChart1" class="chart-height"></canvas>
+                    <div class="chart-wrapper">
+                        <canvas id="perfChart1"></canvas>
+                    </div>
                 </div>
                 <div class="chart-container">
                     <h3 class="text-lg font-semibold mb-4">Volunteer Engagement</h3>
-                    <canvas id="perfChart2" class="chart-height"></canvas>
+                    <div class="chart-wrapper">
+                        <canvas id="perfChart2"></canvas>
+                    </div>
                 </div>
                 <div class="chart-container">
                     <h3 class="text-lg font-semibold mb-4">Service Efficiency</h3>
-                    <canvas id="perfChart3" class="chart-height"></canvas>
+                    <div class="chart-wrapper">
+                        <canvas id="perfChart3"></canvas>
+                    </div>
                 </div>
                 <div class="chart-container">
                     <h3 class="text-lg font-semibold mb-4">Response Time Trend</h3>
-                    <canvas id="perfChart4" class="chart-height"></canvas>
+                    <div class="chart-wrapper">
+                        <canvas id="perfChart4"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
@@ -380,15 +407,19 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div class="chart-container">
                     <h3 class="text-lg font-semibold mb-4">Regional Distribution</h3>
-                    <canvas id="geoChart1" class="chart-height"></canvas>
+                    <div class="chart-wrapper">
+                        <canvas id="geoChart1"></canvas>
+                    </div>
                 </div>
                 <div class="chart-container">
                     <h3 class="text-lg font-semibold mb-4">Coalition Network Density</h3>
-                    <canvas id="geoChart2" class="chart-height"></canvas>
+                    <div class="chart-wrapper">
+                        <canvas id="geoChart2"></canvas>
+                    </div>
                 </div>
                 <div class="chart-container col-span-2">
                     <h3 class="text-lg font-semibold mb-4">Service Coverage Map</h3>
-                    <div id="coverageMap" class="chart-height"></div>
+                    <div id="coverageMap" class="chart-wrapper"></div>
                 </div>
             </div>
         </div>
@@ -399,15 +430,19 @@
             <div class="grid grid-cols-1 gap-6">
                 <div class="chart-container">
                     <h3 class="text-lg font-semibold mb-4">12-Month Rolling Trend</h3>
-                    <canvas id="trendChart1" class="chart-height"></canvas>
+                    <div class="chart-wrapper">
+                        <canvas id="trendChart1"></canvas>
+                    </div>
                 </div>
                 <div class="chart-container">
                     <h3 class="text-lg font-semibold mb-4">Seasonal Patterns</h3>
-                    <div id="seasonalChart" class="chart-height"></div>
+                    <div id="seasonalChart" class="chart-wrapper"></div>
                 </div>
                 <div class="chart-container">
                     <h3 class="text-lg font-semibold mb-4">Predictive Forecast</h3>
-                    <canvas id="forecastChart" class="chart-height"></canvas>
+                    <div class="chart-wrapper">
+                        <canvas id="forecastChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
@@ -418,15 +453,19 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div class="chart-container">
                     <h3 class="text-lg font-semibold mb-4">Year-over-Year Comparison</h3>
-                    <canvas id="compChart1" class="chart-height"></canvas>
+                    <div class="chart-wrapper">
+                        <canvas id="compChart1"></canvas>
+                    </div>
                 </div>
                 <div class="chart-container">
                     <h3 class="text-lg font-semibold mb-4">Regional Performance Radar</h3>
-                    <canvas id="compChart2" class="chart-height"></canvas>
+                    <div class="chart-wrapper">
+                        <canvas id="compChart2"></canvas>
+                    </div>
                 </div>
                 <div class="chart-container col-span-2">
                     <h3 class="text-lg font-semibold mb-4">Multi-Metric Correlation</h3>
-                    <div id="correlationPlot" class="chart-height"></div>
+                    <div id="correlationPlot" class="chart-wrapper"></div>
                 </div>
             </div>
         </div>
